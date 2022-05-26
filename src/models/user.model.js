@@ -40,10 +40,20 @@ const userSchema = mongoose.Schema(
       enum: roles,
       default: 'user',
     },
+    no_hp: {
+      type: String,
+      required: true,
+      trim: true
+    },
     isEmailVerified: {
       type: Boolean,
       default: false,
     },
+    avatar: {
+      type: String,
+      default: null,
+      trim: true
+    }
   },
   {
     timestamps: true,

@@ -2,17 +2,21 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { userService } = require('../services');
+const { eventService } = require('../services');
 
-const createUser = catchAsync(async (req, res) => {
-  const user = await userService.createUser(req.body);
-  res.status(httpStatus.CREATED).send(user);
+const createEvent = catchAsync(async (req, res) => {
+  console.log(req.body);
+  console.log(req.files);
+  // res.json({ message: "Successfully uploaded files" });
+  req.body.images = req.files
+  const event = await eventService.createEvent(req.body);
+  res.status(httpStatus.CREATED).send(event);
 });
 
-const getUsers = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ['name', 'role', 'email']);
+const getEvents = catchAsync(async (req, res) => {
+  const filter = pick(req.query, ['title', 'description', 'location', 'city', 'start_at', 'end_at']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
-  const result = await userService.queryUsers(filter, options);
+  const result = await eventService.queryEvents(filter, options);
   res.send(result);
 });
 
@@ -35,8 +39,8 @@ const deleteUser = catchAsync(async (req, res) => {
 });
 
 module.exports = {
-  createUser,
-  getUsers,
+  createEvent,
+  getEvents,
   getUser,
   updateUser,
   deleteUser,
