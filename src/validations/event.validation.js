@@ -24,6 +24,7 @@ const getEvents = {
     location: Joi.string(),
     city: Joi.string(),
     sortBy: Joi.string(),
+    search: Joi.string(),
     limit: Joi.number().integer(),
     page: Joi.number().integer(),
   }),

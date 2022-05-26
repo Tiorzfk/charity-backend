@@ -5,16 +5,13 @@ const catchAsync = require('../utils/catchAsync');
 const { eventService } = require('../services');
 
 const createEvent = catchAsync(async (req, res) => {
-  console.log(req.body);
-  console.log(req.files);
-  // res.json({ message: "Successfully uploaded files" });
   req.body.images = req.files
   const event = await eventService.createEvent(req.body);
   res.status(httpStatus.CREATED).send(event);
 });
 
 const getEvents = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ['title', 'description', 'location', 'city', 'start_at', 'end_at']);
+  const filter = pick(req.query, ['search']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   const result = await eventService.queryEvents(filter, options);
   res.send(result);
