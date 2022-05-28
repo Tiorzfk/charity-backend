@@ -17,10 +17,10 @@ router
   .post(auth('manageEvents'), upload.array("files"), validate(eventValidation.createEvent), eventController.createEvent)
   .get(validate(eventValidation.getEvents), eventController.getEvents);
 
-// router
-//   .route('/:eventId')
-//   .get(validate(eventValidation.getUser), userController.getUser)
-//   .patch(validate(eventValidation.updateUser), userController.updateUser)
-//   .delete(validate(eventValidation.deleteUser), userController.deleteUser);
+router
+  .route('/:eventId')
+  // .get(validate(eventValidation.getUser), userController.getUser)
+  .patch(upload.array("files"), validate(eventValidation.updateEvent), eventController.updateEvent)
+  .delete(validate(eventValidation.deleteEvent), eventController.deleteEvent);
 
 module.exports = router;

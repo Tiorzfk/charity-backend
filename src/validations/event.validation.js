@@ -17,14 +17,9 @@ const createEvent = {
 
 const getEvents = {
   query: Joi.object().keys({
-    title: Joi.string(),
-    description: Joi.string(),
-    start_at: Joi.string(),
-    end_at: Joi.string(),
-    location: Joi.string(),
-    city: Joi.string(),
-    sortBy: Joi.string(),
-    search: Joi.string(),
+    title: Joi.string().allow(null, ''),
+    sortBy: Joi.string().allow(null, ''),
+    search: Joi.string().allow(null, ''),
     limit: Joi.number().integer(),
     page: Joi.number().integer(),
   }),
@@ -44,12 +39,14 @@ const updateEvent = {
     .keys({
       title: Joi.string().required(),
       description: Joi.string().required(),
-      start_at: Joi.string().required(),
-      end_at: Joi.string().required(),
-      images: Joi.array().required(),
-      location: Joi.array().required(),
+      start_at: Joi.date().required(),
+      end_at: Joi.date().required(),
+      location: Joi.string().required(),
+      city: Joi.string().required(),
       registration_deadline: Joi.string().required(),
       kuota: Joi.number(),
+      files: Joi.array(),
+      files_remove: Joi.string()
     })
     .min(1),
 };

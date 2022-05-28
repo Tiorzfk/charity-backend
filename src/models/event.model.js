@@ -71,7 +71,6 @@ const eventSchema = mongoose.Schema(
 eventSchema.plugin(toJSON);
 eventSchema.plugin(paginate);
 
-eventSchema.index({'$**': 'text'});
 
 eventSchema.pre('save', async function (next) {
   const event = this;

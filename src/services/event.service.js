@@ -30,8 +30,8 @@ const queryEvents = async (filter, options) => {
  * @param {ObjectId} id
  * @returns {Promise<User>}
  */
-const getUserById = async (id) => {
-  return User.findById(id);
+const getEventById = async (id) => {
+  return Event.findById(id);
 };
 
 /**
@@ -49,38 +49,50 @@ const getUserByEmail = async (email) => {
  * @param {Object} updateBody
  * @returns {Promise<User>}
  */
-const updateUserById = async (userId, updateBody) => {
-  const user = await getUserById(userId);
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+const updateEventById = async (eventId, updateBody, files) => {
+  const event = await getEventById(eventId);
+  if (!event) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Event not found');
   }
-  if (updateBody.email && (await User.isEmailTaken(updateBody.email, userId))) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
-  }
-  Object.assign(user, updateBody);
-  await user.save();
-  return user;
+
+  JSON.parse(updateBody.files_remove).forEach(async function(val) {
+    await Event.findOneAndUpdate( { _id : eventId}, { 
+      $pull : { 
+        images : {_id: val._id}
+      } 
+    },
+    { multi : true }  
+    )
+  })
+
+  updateBody.images = files.concat(event.images)
+
+  delete updateBody.files_remove;
+  Object.assign(event, updateBody);
+
+  await event.save();
+  return event;
 };
 
 /**
  * Delete user by id
- * @param {ObjectId} userId
+ * @param {ObjectId} eventId
  * @returns {Promise<User>}
  */
-const deleteUserById = async (userId) => {
-  const user = await getUserById(userId);
-  if (!user) {
+const deleteEventById = async (eventId) => {
+  const event = await getEventById(eventId);
+  if (!event) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
-  await user.remove();
-  return user;
+  await event.remove();
+  return event;
 };
 
 module.exports = {
   createEvent,
   queryEvents,
-  getUserById,
+  getEventById,
   getUserByEmail,
-  updateUserById,
-  deleteUserById,
+  updateEventById,
+  deleteEventById,
 };

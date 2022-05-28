@@ -19,6 +19,7 @@ const paginate = (schema) => {
    * @param {number} [options.page] - Current page (default = 1)
    * @returns {Promise<QueryResult>}
    */
+  schema.index({'$**': 'text'});
   schema.statics.paginate = async function (filter, options) {
     let sort = '';
     if (options.sortBy) {
@@ -35,12 +36,23 @@ const paginate = (schema) => {
     const limit = options.limit && parseInt(options.limit, 10) > 0 ? parseInt(options.limit, 10) : 10;
     const page = options.page && parseInt(options.page, 10) > 0 ? parseInt(options.page, 10) : 1;
     const skip = (page - 1) * limit;
-
-    const countPromise = this.countDocuments(filter).exec();
     if(filter.search) {
-      var docsPromise = this.find({$text: {$search: filter.search}}).sort(sort).skip(skip).limit(limit);
+      var searchField = []
+      Object.keys(schema.tree).forEach((fil, i) => {
+        if(schema.tree[fil].type && (schema.tree[fil].type.toString().includes('String'))){
+          searchField.push({
+            [fil]: { $regex: '.*' + filter.search + '.*' }
+          })
+        }
+      })
+      var search = { 
+        $or: searchField
+      }
+      var countPromise = this.countDocuments(search).exec();
+      var docsPromise = this.find(search).sort(sort).skip(skip).limit(limit);
     }else{
-      var docsPromise = this.find().sort(sort).skip(skip).limit(limit);
+      var countPromise = this.countDocuments({}).exec();
+      var docsPromise = this.find({}).sort(sort).skip(skip).limit(limit);
     }
     if (options.populate) {
       options.populate.split(',').forEach((populateOption) => {
