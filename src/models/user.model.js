@@ -4,6 +4,19 @@ const bcrypt = require('bcryptjs');
 const { toJSON, paginate } = require('./plugins');
 const { roles } = require('../config/roles');
 
+const ImgSchema = mongoose.Schema(
+  { 
+    fieldname: String, 
+    originalname: String,
+    encoding: String,
+    mimetype: String,
+    destination: String,
+    filename: String,
+    path: String,
+    size: Number
+  }
+);
+
 const userSchema = mongoose.Schema(
   {
     name: {
@@ -50,9 +63,8 @@ const userSchema = mongoose.Schema(
       default: false,
     },
     avatar: {
-      type: String,
-      default: null,
-      trim: true
+      type: ImgSchema,
+      default: null
     }
   },
   {

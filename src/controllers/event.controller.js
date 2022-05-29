@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { eventService } = require('../services');
+const { eventService, userService } = require('../services');
 const fs = require('fs');
 
 const createEvent = catchAsync(async (req, res) => {
@@ -18,12 +18,12 @@ const getEvents = catchAsync(async (req, res) => {
   res.send(result);
 });
 
-const getUser = catchAsync(async (req, res) => {
-  const user = await userService.getUserById(req.params.userId);
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+const getEvent = catchAsync(async (req, res) => {
+  const event = await eventService.getEventById(req.params.eventId);
+  if (!event) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Event not found');
   }
-  res.send(user);
+  res.send(event);
 });
 
 const updateEvent = catchAsync(async (req, res) => {
@@ -46,10 +46,49 @@ const deleteEvent = catchAsync(async (req, res) => {
   res.status(httpStatus.NO_CONTENT).send();
 });
 
+const getEventParticipant = catchAsync(async (req, res) => {
+  const filter = pick(req.query, ['search', 'title']);
+  const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  const event = await eventService.getParticipantsEvent(req.params.eventId, filter, options);
+  if (!event) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Event not found');
+  }
+  res.send(event);
+});
+
+const joinParticipant = catchAsync(async (req, res) => {
+  const user = await userService.getUserById(req.body.user_id);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  var participant = await eventService.getParticipantEventById(req.body.user_id);
+  if(!participant)
+  {
+    await eventService.joinEventById(req.params.eventId, req.body);
+  }
+  
+  res.status(httpStatus.CREATED).send(user);
+});
+
+const verifyParticipant = catchAsync(async (req, res) => {
+  const user = await userService.getUserById(req.body.user_id);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  var verify = await eventService.verifyEvent(req.params.eventId, req.body);
+  
+  res.status(httpStatus.CREATED).send(verify);
+});
+
 module.exports = {
   createEvent,
   getEvents,
-  getUser,
+  getEvent,
   updateEvent,
   deleteEvent,
+  getEventParticipant,
+  joinParticipant,
+  verifyParticipant
 };

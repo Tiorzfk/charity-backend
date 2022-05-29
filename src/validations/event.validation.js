@@ -1,6 +1,19 @@
 const Joi = require('joi');
 const { objectId } = require('./custom.validation');
 
+const joinParticipant = {
+  body: {
+      user_id: Joi.string().required(),
+  }
+};
+
+const verifyParticipant = {
+  body: {
+    user_id: Joi.string().required(),
+    is_verified: Joi.number().required(),
+  }
+};
+
 const createEvent = {
   body: {
       title: Joi.string().required(),
@@ -63,4 +76,6 @@ module.exports = {
   getEvent,
   updateEvent,
   deleteEvent,
+  joinParticipant,
+  verifyParticipant
 };

@@ -19,8 +19,17 @@ router
 
 router
   .route('/:eventId')
-  // .get(validate(eventValidation.getUser), userController.getUser)
+  .get(validate(eventValidation.getEvent), eventController.getEvent)
   .patch(upload.array("files"), validate(eventValidation.updateEvent), eventController.updateEvent)
   .delete(validate(eventValidation.deleteEvent), eventController.deleteEvent);
+
+router
+  .route('/:eventId/participant')
+  .get(eventController.getEventParticipant)
+  .post(validate(eventValidation.joinParticipant), eventController.joinParticipant);
+
+  router
+  .route('/:eventId/verify-participant')
+  .post(validate(eventValidation.verifyParticipant), eventController.verifyParticipant);
 
 module.exports = router;
