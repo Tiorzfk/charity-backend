@@ -3,8 +3,14 @@ const catchAsync = require('../utils/catchAsync');
 const { authService, userService, tokenService, emailService } = require('../services');
 
 const register = catchAsync(async (req, res) => {
+  delete req.body.password_confirmation;
+
   const user = await userService.createUser(req.body);
   const tokens = await tokenService.generateAuthTokens(user);
+
+  const verifyEmailToken = await tokenService.generateVerifyEmailToken(user);
+  emailService.sendVerificationEmail(req.body.email, verifyEmailToken);
+  
   res.status(httpStatus.CREATED).send({ user, tokens });
 });
 
@@ -44,7 +50,8 @@ const sendVerificationEmail = catchAsync(async (req, res) => {
 
 const verifyEmail = catchAsync(async (req, res) => {
   await authService.verifyEmail(req.query.token);
-  res.status(httpStatus.NO_CONTENT).send();
+
+  res.redirect(process.env.BASE_URL_APPS+'/#/login?verifyEmail=true')
 });
 
 module.exports = {

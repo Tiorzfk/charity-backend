@@ -24,7 +24,7 @@ const errorHandler = (err, req, res, next) => {
   }
 
   res.locals.errorMessage = err.message;
-
+  console.log(message)
   const response = {
     code: statusCode,
     message,

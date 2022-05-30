@@ -53,6 +53,11 @@ const userSchema = mongoose.Schema(
       enum: roles,
       default: 'user',
     },
+    institute: {
+      type: String,
+      default: '',
+      trim: true
+    },
     no_hp: {
       type: String,
       required: true,

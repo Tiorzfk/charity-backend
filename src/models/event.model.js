@@ -17,6 +17,10 @@ const ImgSchema = mongoose.Schema(
 
 const ParticipantSchema = mongoose.Schema(
   { 
+    kode: {
+      type: String,
+      default: ''
+    }, 
     is_verified: {
       type: Number,
       default: 0
